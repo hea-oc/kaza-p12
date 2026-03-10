@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "dev": "concurrently \"cd back/dev-react-P12 && npm start\" \"cd frontend && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

@@ -1,0 +1,10 @@
+# node_modules concurently
+node_modules/
+
+# logs
+*.log
+
+# variables d'environnement
+.env
+
+dist/
