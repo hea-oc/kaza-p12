@@ -1,5 +1,9 @@
 import Image from 'next/image';
 
+/**
+ * Pied de page commun à toutes les pages.
+ * Affiche le logo Kasa et le copyright.
+ */
 export default function Footer() {
   return (
     <footer className="bg-kasa-bg border-t border-gray-200 py-8 mt-16">

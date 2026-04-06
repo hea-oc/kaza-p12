@@ -29,7 +29,7 @@ export default function Favorites() {
       router.push('/login');
     }
   }, [user, isLoading, router]);
-
+  
   // Charger favoris de l'utilisateur
   useEffect(() => {
     if (!user) return;
@@ -91,7 +91,11 @@ export default function Favorites() {
             </p>
           ) : (
             properties.map(property => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard
+                key={property.id}
+                property={property}
+                onUnfavorite={(id) => setProperties(prev => prev.filter(p => p.id !== id))}
+              />
             ))
           )}
         </div>

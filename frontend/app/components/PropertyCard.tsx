@@ -13,6 +13,16 @@ interface Property {
   location: string;
 }
 
+/**
+ * Card de propriété affichée dans la grille d'annonces et la page favoris.
+ * Gère l'état favori localement (localStorage) et le synchronise avec l'API
+ * si l'utilisateur est connecté.
+ *
+ * @param property - Données de la propriété à afficher
+ * @param onUnfavorite - Callback optionnel appelé quand l'utilisateur retire un favori.
+ *   Utilisé par la page favoris pour retirer la card immédiatement sans rechargement.
+ */
+
 /** Clé localStorage pour les favoris */
 const FAVORITES_KEY = 'kasa_favorites';
 
@@ -31,7 +41,7 @@ function saveFavoritesToStorage(ids: string[]): void {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
 }
 
-export default function PropertyCard({ property }: { property: Property }) {
+export default function PropertyCard({ property, onUnfavorite }: { property: Property; onUnfavorite?: (id: string) => void }) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   // Charger l'état favori depuis localStorage au montage
@@ -55,9 +65,12 @@ export default function PropertyCard({ property }: { property: Property }) {
     saveFavoritesToStorage(updated);
     setIsFavorite(!isFavorite);
 
+    // Notifier la page favoris pour retirer la card immédiatement
+    if (isFavorite && onUnfavorite) onUnfavorite(property.id);
+
     // Sync avec l'API si connecté
     const token = localStorage.getItem('auth_token');
-    const userRaw = localStorage.getItem('auth_user');
+    const userRaw = localStorage.getItem('auth_user'); // vérifier la présence du token et des données utilisateur
     if (token && userRaw) {
       const method = isFavorite ? 'DELETE' : 'POST';
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/properties/${property.id}/favorite`, {

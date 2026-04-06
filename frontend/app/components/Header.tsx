@@ -1,6 +1,11 @@
 import Image from 'next/image';
 import Navbar from './Navbar';
 
+/**
+ * Section hero de la page d'accueil.
+ * Affiche le titre principal et une image d'ambiance.
+ * Utilisé uniquement sur la page d'accueil (pas réutilisable comme Navbar).
+ */
 export default function Header() {
   return (
     <header>

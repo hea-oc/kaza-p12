@@ -9,6 +9,15 @@ interface ModalProps {
   onClose: () => void;
 }
 
+/**
+ * Modale plein écran pour afficher une image en grand format.
+ * Fermeture possible en cliquant sur le fond ou le bouton x.
+ *
+ * @param isOpen - Contrôle l'affichage de la modale
+ * @param imageUrl - URL de l'image à afficher
+ * @param alt - Texte alternatif pour l'accessibilité
+ * @param onClose - Callback appelé à la fermeture
+ */
 export default function Modal({ isOpen, imageUrl, alt, onClose }: ModalProps) {
   if (!isOpen) return null;
 

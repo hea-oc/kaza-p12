@@ -6,6 +6,14 @@ import Image from 'next/image';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Barre de navigation principale, présente sur toutes les pages.
+ * - Desktop : liens horizontaux centrés avec logo au milieu
+ * - Mobile : icône hamburger ouvrant un menu plein écran
+ *
+ * Affiche le nom de l'utilisateur connecté (cliquable vers /profile)
+ * et le bouton de déconnexion si une session est active.
+ */
 export default function Navbar() {
   const { user, logout } = useAuth();
   const router = useRouter();

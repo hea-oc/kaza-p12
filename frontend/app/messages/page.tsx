@@ -41,8 +41,10 @@ function isSameDay(a: string, b: string): boolean {
 function getLastRead(convId: string): string | null {
   try { return localStorage.getItem(`msg_read_${convId}`); } catch { return null; }
 }
-function markAsRead(convId: string) {
-  try { localStorage.setItem(`msg_read_${convId}`, new Date().toISOString()); } catch {}
+// On sauvegarde le timestamp de la conversation (pas l'heure actuelle)
+// pour éviter le bug avec des timestamps futurs dans la DB
+function markAsRead(convId: string, convTimestamp: string) {
+  try { localStorage.setItem(`msg_read_${convId}`, convTimestamp); } catch {}
 }
 function isConvUnread(conv: Conversation): boolean {
   if (!conv.last_message) return false;
@@ -86,7 +88,7 @@ export default function MessagesPage() {
           if (data.length > 0) {
             setSelectedConversation(data[0]);
             fetchMessages(data[0].id);
-            markAsRead(data[0].id);
+            markAsRead(data[0].id, data[0].timestamp);
             setUnreadIds(prev => { const s = new Set(prev); s.delete(data[0].id); return s; });
           }
         }
@@ -122,7 +124,10 @@ export default function MessagesPage() {
       );
       if (res.ok) {
         const data = await res.json();
-        setMessages(data);
+        const sorted = [...data].sort((a: Message, b: Message) =>
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        );
+        setMessages(sorted);
       }
     } catch {
       // silencieux si l'API n'est pas disponible
@@ -133,7 +138,7 @@ export default function MessagesPage() {
     setSelectedConversation(conv);
     fetchMessages(conv.id);
     setMobileView('chat');
-    markAsRead(conv.id);
+    markAsRead(conv.id, conv.timestamp);
     setUnreadIds(prev => { const s = new Set(prev); s.delete(conv.id); return s; });
   };
 

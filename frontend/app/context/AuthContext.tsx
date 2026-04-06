@@ -22,6 +22,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Fournisseur du contexte d'authentification.
+ * Persiste la session dans localStorage (token JWT + données utilisateur).
+ * Au login, charge automatiquement les favoris de l'utilisateur depuis la DB.
+ * Au logout, efface le token, les données utilisateur et les favoris locaux.
+ *
+ * @param children - Composants enfants ayant accès au contexte
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -55,8 +63,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await res.json();
     setToken(data.token);
     setUser(data.user);
+    localStorage.removeItem('kasa_favorites'); // vider les favoris de l'ancien compte
     localStorage.setItem('auth_token', data.token);
     localStorage.setItem('auth_user', JSON.stringify(data.user));
+    // Charger les favoris de ce compte depuis la DB
+    try {
+      const favRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${data.user.id}/favorites`, {
+        headers: { Authorization: `Bearer ${data.token}` }
+      });
+      if (favRes.ok) {
+        const favData = await favRes.json();
+        const ids = Array.isArray(favData) ? favData.map((p: { id: string }) => p.id) : [];
+        localStorage.setItem('kasa_favorites', JSON.stringify(ids));
+      }
+    } catch {}
   };
 
   const signup = async (firstName: string, lastName: string, email: string, password: string, role = 'client') => {
@@ -93,6 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
+    localStorage.removeItem('kasa_favorites');
   };
 
   return (
@@ -102,6 +123,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * Hook pour accéder au contexte d'authentification.
+ * Doit être utilisé dans un composant enfant de AuthProvider.
+ *
+ * @returns Le contexte auth : user, token, login, signup, logout, updateUser, isLoading
+ * @throws Error si utilisé hors de AuthProvider
+ */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (undefined === context) {

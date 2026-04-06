@@ -21,15 +21,15 @@ export default function LoginPage() {
       router.push('/');
     }
   }, [user, router]);
-
+  // Gérer la soumission du formulaire de connexion
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      await authLogin(email, password);
-      router.push('/');
+      await authLogin(email, password); // Si succès, le contexte auth se met à jour et le useEffect ci-dessus redirige vers /
+      router.push('/'); 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connexion échouée');
     } finally {

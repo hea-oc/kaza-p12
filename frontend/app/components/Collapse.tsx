@@ -9,8 +9,13 @@ interface CollapseProps {
 }
 
 /**
- * Section collapse avec animation fluide.
- * Clic sur le titre ouvre/ferme le contenu.
+ * Section accordéon avec animation fluide.
+ * Un clic sur le titre ouvre ou ferme le contenu.
+ * Utilisé sur la page logement pour les équipements et catégories.
+ *
+ * @param title - Texte affiché dans l'en-tête cliquable
+ * @param children - Contenu affiché/masqué
+ * @param defaultOpen - Si true, le panneau est ouvert au montage (défaut: false)
  */
 export default function Collapse({ title, children, defaultOpen = false }: CollapseProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
