@@ -84,7 +84,7 @@ export default function AddPropertyPage() {
     return true;
   };
 
-  // Lecture d'un fichier vers data URL pour preview
+  // Lecture d'un fichier → data URL pour preview
   const readFileAsDataURL = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();

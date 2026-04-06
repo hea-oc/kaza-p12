@@ -3,11 +3,34 @@
 import { useState } from 'react';
 import Image from 'next/image';
 
+/**
+ * Props du composant Carousel.
+ *
+ * @property images - Tableau ordonné des URLs d'images à afficher.
+ * @property alt   - Texte alternatif de base utilisé pour chaque image
+ *                   (suffixé par le numéro de l'image, ex : "Appartement - Image 2").
+ */
 interface CarouselProps {
   images: string[];
   alt: string;
 }
 
+/**
+ * Carousel d'images interactif pour la page de détail d'un logement.
+ *
+ * Comportement selon le nombre d'images :
+ * - 0 image  → affiche un placeholder "Aucune image disponible"
+ * - 1 image  → affiche l'image sans flèches ni compteur (conforme aux specs)
+ * - 2+ images → carousel complet avec navigation, compteur et raccourcis clavier
+ *
+ * Accessibilité :
+ * - `role="region"` + `aria-label` identifiant la galerie
+ * - `aria-label` explicites sur chaque bouton ("Image précédente / suivante")
+ * - `aria-live="polite"` sur le compteur → annoncé par les lecteurs d'écran
+ * - Navigation clavier : flèche gauche / droite quand le carousel a le focus
+ *
+ * @param props - {@link CarouselProps}
+ */
 export default function Carousel({ images, alt }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -37,14 +60,17 @@ export default function Carousel({ images, alt }: CarouselProps) {
     );
   }
 
+  // Recule à l'image précédente, boucle sur la dernière si on est à l'index 0. 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
+  // Avance à l'image suivante, boucle sur la première si on est à la dernière. 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  // Gère la navigation clavier (flèche gauche / droite) quand le carousel a le focus.
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowLeft') goToPrevious();
     if (e.key === 'ArrowRight') goToNext();
